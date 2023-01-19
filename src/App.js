@@ -1,31 +1,17 @@
 import Card from "./components/Card";
 import Header from "./components/Header";
 import Drawer from "./components/Darwer";
-
-const arr = [
-  {
-    title: "Мужские Кроссовки Nike Kyrie 7",
-    price: 11299,
-    imageURL: "/img/sneakers/5.jpg",
-  },
-  {
-    title: "Мужские Кроссовки Jordan Air Jordan 11",
-    price: 10799,
-    imageURL: "/img/sneakers/8.jpg",
-  },
-  {
-    title: "Мужские Кроссовки Nike LeBron XVIII",
-    price: 16499,
-    imageURL: "/img/sneakers/10.jpg",
-  },
-];
+import React from "react";
 
 function App() {
+  const [items, setItems] = React.useState([]);
+  const [cartOpened, setCartOpened] = React.useState(false);
+
   return (
     <div className="wrapper clear">
-      <Drawer></Drawer>
+      {cartOpened && <Drawer onClose={() => setCartOpened(false)}></Drawer>}
 
-      <Header></Header>
+      <Header onClickCart={() => setCartOpened(true)}></Header>
       <div className="content p-40">
         <div className="d-flex justify-between align-center mb-40">
           <h1>Все кроссовки</h1>
@@ -39,12 +25,14 @@ function App() {
             <input placeholder="Поиск..."></input>
           </div>
         </div>
-        <div className="d-flex">
-          {arr.map((obj) => (
+        <div className="d-flex flex-wrap">
+          {items.map((obj) => (
             <Card
               title={obj.title}
               price={obj.price}
               imageURL={obj.imageURL}
+              onClickFavorite={() => console.log("Добавили в закладки")}
+              onClickPlus={() => console.log("Добавили в корзину")}
             ></Card>
           ))}
         </div>
