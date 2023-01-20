@@ -63,7 +63,7 @@ header {
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100%;
@@ -183,4 +183,47 @@ header {
   &:active {
     background: #68a918fa;
   }
+}
+
+.statusCart {
+  margin: auto;
+
+  h3 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 22px;
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 16px;
+    text-align: center;
+    color: #000000;
+    opacity: 0.4;
+  }
+
+  button {
+    position: relative;
+  }
+  .arrowBack {
+    transform: rotate(180deg);
+    position: absolute;
+    left: 25px;
+    top: 20px;
+    transition: transform 0.15s ease-in-out;
+  }
+
+  &:hover {
+    .arrowBack {
+      transform: rotate(180deg) translateX(5px);
+    }
+  }
+}
+
+.btnArrow {
+  width: 35px;
+  height: 35px;
+  background: #ffffff;
+  border: 1px solid #f2f2f2;
+  border-radius: 8px;
 }

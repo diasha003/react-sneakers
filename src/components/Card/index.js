@@ -1,30 +1,45 @@
 import React from "react";
 import styles from "./Card.module.scss";
 
-function Card(props) {
+function Card({
+  item,
+  key,
+  favoriteItems = [],
+  imageURL,
+  title,
+  price,
+  onClickFavorite,
+  onPlus,
+}) {
   const [isAdded, setIdAdded] = React.useState(false);
 
   const onClickPlus = () => {
-    isAdded ? setIdAdded(false) : setIdAdded(true);
+    onPlus({ key, imageURL, title, price });
+    setIdAdded(!isAdded);
   };
 
   return (
     <div className={styles.card}>
       <div className={styles.favorite}>
         <img
-          width={50}
-          height={50}
-          src="/img/unliked.svg"
+          width={30}
+          height={30}
+          src={
+            (item,
+            favoriteItems.indexOf(item) != -1
+              ? "/img/liked.svg"
+              : "/img/like.svg")
+          }
           alt="unliked"
-          onClick={props.onClickFavorite}
+          onClick={onClickFavorite}
         ></img>
       </div>
-      <img width={133} height={112} src={props.imageURL}></img>
-      <p>{props.title}</p>
+      <img width={133} height={112} src={imageURL}></img>
+      <p>{title}</p>
       <div className="d-flex justify-between align-center">
         <div className="d-flex flex-column">
           <span>Цена: </span>
-          <b>{props.price}</b>
+          <b>{price} руб.</b>
         </div>
         <img
           className="button"
