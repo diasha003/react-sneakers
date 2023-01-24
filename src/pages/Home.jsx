@@ -2,12 +2,14 @@ import Card from "../components/Card";
 
 function Home({
   items,
+  cartItems,
   favoriteItems,
   onClickFavorite,
   onPlus,
   onSearch,
   valueInputSearch,
 }) {
+  //console.log({ items });
   return (
     <div className="content p-40">
       <div className="d-flex justify-between align-center mb-40">
@@ -21,6 +23,7 @@ function Home({
           ></input>
         </div>
       </div>
+
       <div className="d-flex flex-wrap">
         {items
           .filter((item) =>
@@ -36,6 +39,7 @@ function Home({
               onClickFavorite={() => onClickFavorite(item)}
               onPlus={() => onPlus(item)}
               favoriteItems={favoriteItems}
+              added={cartItems.some((obj) => obj.imageURL === item.imageURL)}
             ></Card>
           ))}
       </div>

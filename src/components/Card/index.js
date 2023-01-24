@@ -3,7 +3,6 @@ import styles from "./Card.module.scss";
 
 function Card({
   item,
-  key,
   id,
   favoriteItems = [],
   imageURL,
@@ -12,12 +11,13 @@ function Card({
   onClickFavorite,
   onPlus,
   favorited = false,
+  added = false,
 }) {
-  const [isAdded, setIdAdded] = React.useState(false);
+  const [isAdded, setIdAdded] = React.useState(added);
   const [isLike, setIsLike] = React.useState(favorited);
 
   const onClickPlus = () => {
-    onPlus({ key, imageURL, title, price });
+    onPlus({ id, imageURL, title, price });
     setIdAdded(!isAdded);
   };
 
@@ -32,10 +32,7 @@ function Card({
         <img
           width={30}
           height={30}
-          src={
-            //favoriteItems.indexOf(item) != -1
-            isLike ? "/img/liked.svg" : "/img/like.svg"
-          }
+          src={isLike ? "/img/liked.svg" : "/img/like.svg"}
           alt="unliked"
           onClick={onClickLike}
         ></img>

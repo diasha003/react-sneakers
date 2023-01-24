@@ -22,7 +22,7 @@ function Drawer({ items = [], onClickPurchases, onRemoveItem }) {
           <>
             <div className="items">
               {items.map((obj) => (
-                <div className="cartItem d-flex align-center">
+                <div key={obj.id} className="cartItem d-flex align-center">
                   <img
                     width={70}
                     height={70}

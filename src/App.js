@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { all } from "axios";
 import Header from "./components/Header";
 import Drawer from "./pages/Drawer";
 import React from "react";
@@ -33,7 +33,7 @@ function App() {
   }, []);
 
   const onAddToCart = async (obj) => {
-    /*var index = cartItems.indexOf(obj);
+    /*let index = cartItems.indexOf(obj);
     if (index !== -1) {
       let removed = cartItems.splice(index, 1);
       setCartItems(cartItems);
@@ -41,11 +41,25 @@ function App() {
       setCartItems([...cartItems, obj]);
     }*/
 
-    const { data } = await axios.post(
-      "https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart",
-      obj
-    );
-    setCartItems([...cartItems, data]);
+    try {
+      if (cartItems.find((item) => Number(item.id) === Number(obj.id))) {
+        axios.delete(
+          `https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart/${obj.id}`
+        );
+        setCartItems((prev) =>
+          prev.filter((item) => Number(item.id) !== Number(obj.id))
+        );
+      } else {
+        const { data } = await axios.post(
+          "https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart",
+          obj
+        );
+        setCartItems([...cartItems, data]);
+      }
+    } catch (error) {
+      alert();
+      console.log(error);
+    }
   };
 
   const onRemoveToCartitem = (id) => {
@@ -99,6 +113,7 @@ function App() {
           element={
             <Home
               items={items}
+              cartItems={cartItems}
               favoriteItems={favotireItems}
               onClickFavorite={(item) => onAddFavoriteItems(item)}
               onPlus={(item) => onAddToCart(item)}
