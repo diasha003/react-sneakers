@@ -1,24 +1,28 @@
-import Card from "./Card";
+import { isContentEditable } from "@testing-library/user-event/dist/utils";
+import { Link } from "react-router-dom";
+import Card from "../components/Card";
 
-function FavoriteItems({ items = [], onNotAddFavoriteItems }) {
+function FavoriteItems({ items = [], onClickFavorite }) {
   return (
     <div className="content p-40">
       <div className="d-flex mb-40">
-        <button className="btnArrow mr-10"></button>
+        <Link to="/">
+          <button className="btnArrow mr-10"></button>
+        </Link>
+
         <h1>Мои закладки</h1>
       </div>
       <div className="d-flex flex-wrap">
         {items.length ? (
           items.map((item) => (
             <Card
+              {...item}
               key={item.key}
               item={item}
               favoriteItems={items}
-              title={item.title}
-              price={item.price}
               imageLike={true}
-              imageURL={item.imageURL}
-              onClickFavorite={() => console.log("Добавили в закладки")}
+              favorited={true}
+              onClickFavorite={() => onClickFavorite(item)}
               //onPlus={(obj) => onAddToCart(item)}
             ></Card>
           ))
@@ -28,12 +32,18 @@ function FavoriteItems({ items = [], onNotAddFavoriteItems }) {
             style={{ height: "700px" }}
           >
             <img></img>
-            <h3>Закладок нет :(</h3>
+            <h3>Закладок нет :</h3>
             <p>Вы ничего не добавляли в закладки</p>
-            <button className="green_button" onClick={onNotAddFavoriteItems}>
-              <img src="/img/arrow.svg" alt="arrow" className="arrowBack"></img>
-              Вернуться назад
-            </button>
+            <Link to="/">
+              <button className="green_button">
+                <img
+                  src="/img/arrow.svg"
+                  alt="arrow"
+                  className="arrowBack"
+                ></img>
+                Вернуться назад
+              </button>
+            </Link>
           </div>
         )}
       </div>

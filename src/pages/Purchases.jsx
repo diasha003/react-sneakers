@@ -1,18 +1,13 @@
-import Card from "./Card";
+import { Link } from "react-router-dom";
+import Card from "../components/Card";
 
-function Purchases({
-  purchasesItems,
-  setPurchasesOpened,
-  setCartOpened,
-  onAddFavoriteItems,
-}) {
+function Purchases({ purchasesItems, onAddFavoriteItems }) {
   return (
     <div className="content p-40">
       <div className="d-flex mb-40">
-        <button
-          className="btnArrow mr-10"
-          onClick={() => (setPurchasesOpened(false), setCartOpened(false))}
-        ></button>
+        <Link to="/">
+          <button className="btnArrow mr-10"></button>
+        </Link>
         <h1>Мои покупки</h1>
       </div>
       <div className="d-flex flex-wrap">
@@ -35,13 +30,16 @@ function Purchases({
             <img></img>
             <h3>У вас нет заказов</h3>
             <p>Вы обязательно найдёте то, что вам понравится</p>
-            <button
-              className="green_button"
-              onClick={() => setPurchasesOpened(false)}
-            >
-              <img src="/img/arrow.svg" alt="arrow" className="arrowBack"></img>
-              Вернуться назад
-            </button>
+            <Link to="/">
+              <button className="green_button">
+                <img
+                  src="/img/arrow.svg"
+                  alt="arrow"
+                  className="arrowBack"
+                ></img>
+                Вернуться назад
+              </button>
+            </Link>
           </div>
         )}
       </div>

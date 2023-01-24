@@ -1,87 +1,145 @@
-import Card from "./components/Card";
+import axios from "axios";
 import Header from "./components/Header";
-import Drawer from "./components/Drawer";
+import Drawer from "./pages/Drawer";
 import React from "react";
-import Purchases from "./components/Purchases";
-import FavoriteItems from "./components/FavoriteItems";
-import Content from "./components/Content";
+import Purchases from "./pages/Purchases";
+import FavoriteItems from "./pages/FavoriteItems";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
 
 function App() {
   const [items, setItems] = React.useState([]);
   const [cartItems, setCartItems] = React.useState([]);
-  const [cartOpened, setCartOpened] = React.useState(false);
-
-  const [purchasesOpened, setPurchasesOpened] = React.useState(false);
   const [purchasesItems, setPurchasesItems] = React.useState([]);
-
-  const [favoriteItemsOpened, setFavoriteItemsOpened] = React.useState(false);
   const [favotireItems, setFavoriteItems] = React.useState([]);
+  const [searchValue, setSearchValue] = React.useState("");
 
   React.useEffect(() => {
-    fetch("https://63c9a2e0320a0c4c954cae4f.mockapi.io/items")
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        setItems(json);
-      });
-  }, []); //данные никакие не изменились ([]) - при первом рендеринге
+    async function fetchData() {
+      const [cartResponse, favoriteResponse, itemsResponse] = await Promise.all(
+        [
+          axios.get(" https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart"),
+          axios.get("https://63ce90b3fdfe2764c725c25b.mockapi.io/favorites"),
+          axios.get(" https://63c9a2e0320a0c4c954cae4f.mockapi.io/items"),
+        ]
+      );
 
-  const onAddToCart = (obj) => {
-    var index = cartItems.indexOf(obj);
+      setCartItems(cartResponse.data);
+      setFavoriteItems(favoriteResponse.data);
+      setItems(itemsResponse.data);
+    }
+
+    fetchData();
+  }, []);
+
+  const onAddToCart = async (obj) => {
+    /*var index = cartItems.indexOf(obj);
     if (index !== -1) {
       let removed = cartItems.splice(index, 1);
       setCartItems(cartItems);
     } else {
       setCartItems([...cartItems, obj]);
+    }*/
+
+    const { data } = await axios.post(
+      "https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart",
+      obj
+    );
+    setCartItems([...cartItems, data]);
+  };
+
+  const onRemoveToCartitem = (id) => {
+    axios.delete(`https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart/${id}`);
+    setCartItems((prev) =>
+      prev.filter((data) => Number(data.id) !== Number(id))
+    );
+  };
+
+  const onAddFavoriteItems = async (obj) => {
+    try {
+      const findItem = favotireItems.find(
+        (item) => Number(item.id) === Number(obj.id)
+      );
+
+      if (findItem) {
+        setFavoriteItems((prev) =>
+          prev.filter((data) => Number(data.id) !== Number(obj.id))
+        );
+        axios.delete(
+          `https://63ce90b3fdfe2764c725c25b.mockapi.io/favorites/${obj.id}`
+        );
+      } else {
+        const { data } = await axios.post(
+          "https://63ce90b3fdfe2764c725c25b.mockapi.io/favorites",
+          obj
+        );
+        setFavoriteItems([...favotireItems, data]);
+      }
+    } catch (err) {
+      alert("Не удалось добавить в избранное!");
+      console.log(err);
     }
   };
 
-  const onAddFavoriteItems = (obj) => {
-    setFavoriteItems([...favotireItems, obj]);
+  const onAddPurchasesItems = (obj) => {
+    setPurchasesItems([...purchasesItems, obj]);
+  };
+
+  const onChangeSearchInput = (event) => {
+    setSearchValue(event.target.value);
   };
 
   return (
     <div className="wrapper clear">
-      {!purchasesOpened && cartOpened && (
-        <Drawer
-          items={cartItems}
-          onClose={() => setCartOpened(false)}
-          onClickPurchases={(items) => (
-            setPurchasesOpened(true), setPurchasesItems(items, setCartItems([]))
-          )}
-        ></Drawer>
-      )}
-      <Header
-        onClickCart={() => setCartOpened(true)}
-        onClickPurchases={() => setPurchasesOpened(true)}
-        onClickFavorite={() => setFavoriteItemsOpened(true)}
-      ></Header>
-
-      {favoriteItemsOpened && (
-        <FavoriteItems
-          onNotAddFavoriteItems={() => setFavoriteItemsOpened(false)}
-          items={favotireItems}
-        ></FavoriteItems>
-      )}
-
-      {purchasesOpened && (
-        <Purchases
-          purchasesItems={purchasesItems}
-          setPurchasesOpened={() => setPurchasesOpened(false)}
-          setCartOpened={() => setCartOpened(false)}
-          onAddFavoriteItems={() => onAddFavoriteItems()}
-        ></Purchases>
-      )}
-
-      {!favoriteItemsOpened && !purchasesOpened && (
-        <Content
-          items={items}
-          favoriteItems={favotireItems}
-          onClickFavorite={(item) => onAddFavoriteItems(item)}
-          onPlus={(item) => onAddToCart(item)}
-        ></Content>
-      )}
+      <Header></Header>
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            <Home
+              items={items}
+              favoriteItems={favotireItems}
+              onClickFavorite={(item) => onAddFavoriteItems(item)}
+              onPlus={(item) => onAddToCart(item)}
+              onSearch={(event) => onChangeSearchInput(event)}
+              valueInputSearch={searchValue}
+            ></Home>
+          }
+        />
+        <Route
+          path="/favorites"
+          exact
+          element={
+            <FavoriteItems
+              onClickFavorite={(item) => onAddFavoriteItems(item)}
+              items={favotireItems}
+            ></FavoriteItems>
+          }
+        ></Route>
+        <Route
+          path="/purchases"
+          exact
+          element={
+            <Purchases
+              purchasesItems={purchasesItems}
+              onAddFavoriteItems={() => onAddFavoriteItems()}
+            ></Purchases>
+          }
+        ></Route>
+        <Route
+          path="/cart"
+          exact
+          element={
+            <Drawer
+              items={cartItems}
+              //onClickPurchases={(items) => (
+              //onAddPurchasesItems(items), setCartItems([]))}
+              onRemoveItem={(id) => onRemoveToCartitem(id)}
+            ></Drawer>
+          }
+        ></Route>
+      </Routes>
     </div>
   );
 }
