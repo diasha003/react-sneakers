@@ -1,7 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Info from "../components/Info";
+import AppContext from "../context";
 
-function Drawer({ items = [], onClickPurchases, onRemoveItem }) {
+function Drawer({ onRemoveItem }) {
+  const [isOrderComplete, setIsOrderComplete] = React.useState(false);
+
+  const { cartItems, onAddPurchasesItems, setCartItems } =
+    React.useContext(AppContext);
+
+  const onClickOrder = () => {
+    // onAddPurchasesItems(cartItems);
+    //setCartItems([]);
+    setIsOrderComplete(true);
+  };
+
   return (
     <div className="overlay">
       <div className="drawer-block d-flex flex-column">
@@ -18,10 +31,10 @@ function Drawer({ items = [], onClickPurchases, onRemoveItem }) {
           </Link>
         </h2>
 
-        {items.length > 0 ? (
+        {cartItems.length > 0 ? (
           <>
             <div className="items">
-              {items.map((obj) => (
+              {cartItems.map((obj) => (
                 <div key={obj.id} className="cartItem d-flex align-center">
                   <img
                     width={70}
@@ -62,10 +75,7 @@ function Drawer({ items = [], onClickPurchases, onRemoveItem }) {
                 </li>
               </ul>
               <Link to="/cart/maked">
-                <button
-                  className="green_button"
-                  onClick={() => onClickPurchases(items)}
-                >
+                <button className="green_button" onClick={onClickOrder}>
                   Оформить заказ
                   <img src="/img/arrow.svg" alt="arrow"></img>
                 </button>
@@ -73,27 +83,19 @@ function Drawer({ items = [], onClickPurchases, onRemoveItem }) {
             </div>
           </>
         ) : (
-          <div className="d-flex flex-column align-center statusCart">
-            <img
-              width={120}
-              height={120}
-              src="/img/empty-cart.jpg"
-              alt="cart"
-              className="mb-5"
-            ></img>
-            <h3>Корзина пустая</h3>
-            <p>Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ.</p>
-            <Link to="/">
-              <button className="green_button">
-                <img
-                  src="/img/arrow.svg"
-                  alt="arrow"
-                  className="arrowBack"
-                ></img>
-                Вернуться назад
-              </button>
-            </Link>
-          </div>
+          <Info
+            title={isOrderComplete ? "Заказ оформлен" : "Корзина пустая"}
+            description={
+              isOrderComplete
+                ? "Ваш заказ #18 скоро будет передан курьерской доставке"
+                : "Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."
+            }
+            imageURL={
+              isOrderComplete
+                ? "/img/complete-order.jpg"
+                : "/img/empty-cart.jpg"
+            }
+          ></Info>
         )}
       </div>
     </div>
@@ -111,7 +113,7 @@ export default Drawer;
               alt="cart"
               className="mb-5"
             ></img>
-            <h3 style={{ color: "#87C20A" }}>Заказ оформлен!</h3>
+            <h3 style={{ color: "#87C20A" }}>"Корзина пустая"</h3>
             <p>Ваш заказ #18 скоро будет передан курьерской доставке</p>
             <Link to="/">
               <button className="green_button" onClick={onClose}>

@@ -6,6 +6,7 @@ import Purchases from "./pages/Purchases";
 import FavoriteItems from "./pages/FavoriteItems";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
+import AppContext from "./context";
 
 function App() {
   const [items, setItems] = React.useState([]);
@@ -13,9 +14,11 @@ function App() {
   const [purchasesItems, setPurchasesItems] = React.useState([]);
   const [favotireItems, setFavoriteItems] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function fetchData() {
+      setIsLoading(true);
       const [cartResponse, favoriteResponse, itemsResponse] = await Promise.all(
         [
           axios.get(" https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart"),
@@ -23,6 +26,8 @@ function App() {
           axios.get(" https://63c9a2e0320a0c4c954cae4f.mockapi.io/items"),
         ]
       );
+
+      setIsLoading(false);
 
       setCartItems(cartResponse.data);
       setFavoriteItems(favoriteResponse.data);
@@ -54,7 +59,7 @@ function App() {
           "https://63c9a2e0320a0c4c954cae4f.mockapi.io/cart",
           obj
         );
-        setCartItems([...cartItems, data]);
+        setCartItems([...cartItems, obj]);
       }
     } catch (error) {
       alert();
@@ -103,59 +108,68 @@ function App() {
     setSearchValue(event.target.value);
   };
 
+  const isItemAdded = (imageURL) => {
+    //console.log(cartItems);
+    return cartItems.some((obj) => obj.imageURL === imageURL);
+  };
+
   return (
-    <div className="wrapper clear">
-      <Header></Header>
-      <Routes>
-        <Route
-          exact
-          path="/"
-          element={
-            <Home
-              items={items}
-              cartItems={cartItems}
-              favoriteItems={favotireItems}
-              onClickFavorite={(item) => onAddFavoriteItems(item)}
-              onPlus={(item) => onAddToCart(item)}
-              onSearch={(event) => onChangeSearchInput(event)}
-              valueInputSearch={searchValue}
-            ></Home>
-          }
-        />
-        <Route
-          path="/favorites"
-          exact
-          element={
-            <FavoriteItems
-              onClickFavorite={(item) => onAddFavoriteItems(item)}
-              items={favotireItems}
-            ></FavoriteItems>
-          }
-        ></Route>
-        <Route
-          path="/purchases"
-          exact
-          element={
-            <Purchases
-              purchasesItems={purchasesItems}
-              onAddFavoriteItems={() => onAddFavoriteItems()}
-            ></Purchases>
-          }
-        ></Route>
-        <Route
-          path="/cart"
-          exact
-          element={
-            <Drawer
-              items={cartItems}
-              //onClickPurchases={(items) => (
-              //onAddPurchasesItems(items), setCartItems([]))}
-              onRemoveItem={(id) => onRemoveToCartitem(id)}
-            ></Drawer>
-          }
-        ></Route>
-      </Routes>
-    </div>
+    <AppContext.Provider
+      value={{
+        items,
+        cartItems,
+        purchasesItems,
+        favotireItems,
+        isItemAdded,
+        onAddFavoriteItems,
+        setCartItems,
+        onAddPurchasesItems,
+      }}
+    >
+      <div className="wrapper clear">
+        <Header></Header>
+        <Routes>
+          <Route
+            exact
+            path="/"
+            element={
+              <Home
+                items={items}
+                cartItems={cartItems}
+                favoriteItems={favotireItems}
+                onClickFavorite={(item) => onAddFavoriteItems(item)}
+                onPlus={(item) => onAddToCart(item)}
+                onSearch={(event) => onChangeSearchInput(event)}
+                valueInputSearch={searchValue}
+                isLoading={isLoading}
+              ></Home>
+            }
+          />
+          <Route
+            path="/favorites"
+            exact
+            element={<FavoriteItems></FavoriteItems>}
+          ></Route>
+          <Route
+            path="/purchases"
+            exact
+            element={
+              <Purchases
+                purchasesItems={purchasesItems}
+                onAddFavoriteItems={() => onAddFavoriteItems()}
+              ></Purchases>
+            }
+          ></Route>
+          <Route
+            path="/cart"
+            exact
+            element={
+              <Drawer onRemoveItem={(id) => onRemoveToCartitem(id)}></Drawer>
+            }
+          ></Route>
+        </Routes>
+      </div>
+    </AppContext.Provider>
   );
 }
 

@@ -1,8 +1,11 @@
-import { isContentEditable } from "@testing-library/user-event/dist/utils";
+import React from "react";
 import { Link } from "react-router-dom";
 import Card from "../components/Card";
+import AppContext from "../context";
 
-function FavoriteItems({ items = [], onClickFavorite }) {
+function FavoriteItems({ onClickFavorite }) {
+  const { favotireItems, onAddFavoriteItems } = React.useContext(AppContext);
+
   return (
     <div className="content p-40">
       <div className="d-flex mb-40">
@@ -13,16 +16,15 @@ function FavoriteItems({ items = [], onClickFavorite }) {
         <h1>Мои закладки</h1>
       </div>
       <div className="d-flex flex-wrap">
-        {items.length ? (
-          items.map((item) => (
+        {favotireItems.length ? (
+          favotireItems.map((item) => (
             <Card
               {...item}
               key={item.key}
               item={item}
-              favoriteItems={items}
               imageLike={true}
               favorited={true}
-              onClickFavorite={() => onClickFavorite(item)}
+              onClickFavorite={() => onAddFavoriteItems(item)}
               //onPlus={(obj) => onAddToCart(item)}
             ></Card>
           ))
