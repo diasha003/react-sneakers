@@ -5,7 +5,7 @@ const Info = ({ title, description, imageURL }) => {
   return (
     <div className="d-flex flex-column align-center statusCart">
       <img
-        width={120}
+        width={100}
         height={120}
         src={imageURL}
         alt="cart"
